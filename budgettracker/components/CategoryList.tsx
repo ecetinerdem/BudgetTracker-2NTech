@@ -18,7 +18,6 @@ export const CategoryList: React.FC = () => {
               : getCategoryIncome(category.id);
           const percentage = (amount / category.budgetLimit) * 100;
           const isIncome = category.type === "income";
-          const progressColor = isIncome ? "bg-green-500" : "bg-red-500";
 
           return (
             <li key={category.id} className="bg-secondary p-3 rounded">
@@ -34,7 +33,7 @@ export const CategoryList: React.FC = () => {
                   Sil
                 </button>
               </div>
-              <Progress value={percentage} className={progressColor} />
+              <Progress value={percentage} />
               <div className="flex justify-between text-sm mt-1">
                 <span>
                   ₺{amount.toFixed(2)} / ₺{category.budgetLimit.toFixed(2)}

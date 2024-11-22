@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { addDays, format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 
-export type Transaction = {
+type Transaction = {
   id: string;
   type: "income" | "expense";
   amount: number;
@@ -18,26 +18,27 @@ type Category = {
   name: string;
   type: "income" | "expense";
   budgetLimit: number;
+  hasTransactions: boolean;
 };
 
 type BudgetContextType = {
   transactions: Transaction[];
   categories: Category[];
   addTransaction: (transaction: Omit<Transaction, "id">) => void;
-  addCategory: (category: Omit<Category, "id">) => void;
+  addCategory: (category: Omit<Category, "id" | "hasTransactions">) => void;
   updateCategory: (id: string, updates: Partial<Category>) => void;
   deleteTransaction: (id: string) => void;
   deleteCategory: (id: string) => void;
+  updateTransaction: (
+    id: string,
+    updates: Partial<Omit<Transaction, "id">>
+  ) => void;
   getMonthlyTransactions: () => Transaction[];
   getCategoryExpenses: (categoryId: string) => number;
   getCategoryIncome: (categoryId: string) => number;
   getTotalIncome: () => number;
   getTotalExpenses: () => number;
   checkBudgetLimits: () => { categoryId: string; percentage: number }[];
-  updateTransaction: (
-    id: string,
-    updates: Partial<Omit<Transaction, "id" | "type">>
-  ) => void;
 };
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
@@ -71,10 +72,17 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({
   const addTransaction = (transaction: Omit<Transaction, "id">) => {
     const newTransaction = { ...transaction, id: uuidv4() };
     setTransactions((prev) => [...prev, newTransaction]);
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id === transaction.category
+          ? { ...cat, hasTransactions: true }
+          : cat
+      )
+    );
   };
 
-  const addCategory = (category: Omit<Category, "id">) => {
-    const newCategory = { ...category, id: uuidv4() };
+  const addCategory = (category: Omit<Category, "id" | "hasTransactions">) => {
+    const newCategory = { ...category, id: uuidv4(), hasTransactions: false };
     setCategories((prev) => [...prev, newCategory]);
   };
 
@@ -84,21 +92,30 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
-  const deleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const deleteCategory = (id: string) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
-  };
-
   const updateTransaction = (
     id: string,
-    updates: Partial<Omit<Transaction, "id" | "type">>
+    updates: Partial<Omit<Transaction, "id">>
   ) => {
     setTransactions((prev) =>
       prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
     );
+  };
+
+  const deleteTransaction = (id: string) => {
+    setTransactions((prev) => prev.filter((t) => t.id !== id));
+    // Check if the category still has transactions
+    setCategories((prev) =>
+      prev.map((cat) => ({
+        ...cat,
+        hasTransactions: transactions.some(
+          (t) => t.category === cat.id && t.id !== id
+        ),
+      }))
+    );
+  };
+
+  const deleteCategory = (id: string) => {
+    setCategories((prev) => prev.filter((c) => c.id !== id));
   };
 
   const getMonthlyTransactions = () => {
@@ -154,9 +171,9 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({
         addTransaction,
         addCategory,
         updateCategory,
+        updateTransaction,
         deleteTransaction,
         deleteCategory,
-        updateTransaction,
         getMonthlyTransactions,
         getCategoryExpenses,
         getCategoryIncome,
