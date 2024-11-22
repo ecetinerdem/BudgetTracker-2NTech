@@ -58,12 +58,6 @@ export const TransactionForm: React.FC = () => {
     }
   };
 
-  const formatDateForInput = (dateString: string) => {
-    if (!dateString) return "";
-    const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
-    return isValid(parsedDate) ? format(parsedDate, "yyyy-MM-dd") : "";
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-6">
       <Select
@@ -107,7 +101,11 @@ export const TransactionForm: React.FC = () => {
       <div className="relative">
         <Input
           type="date"
-          value={formatDateForInput(date)}
+          value={
+            date
+              ? format(parse(date, "dd/MM/yyyy", new Date()), "yyyy-MM-dd")
+              : ""
+          }
           onChange={handleDateChange}
           required
           className="w-full pr-10"
@@ -116,7 +114,9 @@ export const TransactionForm: React.FC = () => {
           <span className="text-gray-500">{date || "dd/mm/yyyy"}</span>
         </div>
       </div>
-      <Button type="submit">İşlem Ekle</Button>
+      <Button type="submit" className="bg-sky-300 hover:bg-sky-400 text-white">
+        İşlem Ekle
+      </Button>
     </form>
   );
 };

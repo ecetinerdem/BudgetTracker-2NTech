@@ -61,7 +61,9 @@ export const CategoryForm: React.FC = () => {
         placeholder={type === "income" ? "Kazanç Miktarı" : "Bütçe Limiti"}
         required
       />
-      <Button type="submit">Kategori Ekle</Button>
+      <Button type="submit" className="bg-sky-300 hover:bg-sky-400 text-white">
+        Kategori Ekle
+      </Button>
     </form>
   );
 };
