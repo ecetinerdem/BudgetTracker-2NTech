@@ -26,13 +26,17 @@ export const Dashboard: React.FC = () => {
   }, [checkBudgetLimits]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 dark:bg-gray-800">
       {warnings.length > 0 && (
         <div className="space-y-2">
           {warnings.map(({ categoryId, percentage }) => {
             const category = categories.find((c) => c.id === categoryId);
             return (
-              <Alert variant="destructive" key={categoryId}>
+              <Alert
+                variant="destructive"
+                key={categoryId}
+                className="dark:bg-red-900 dark:text-white"
+              >
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Bütçe Uyarısı</AlertTitle>
                 <AlertDescription>
@@ -50,8 +54,8 @@ export const Dashboard: React.FC = () => {
             <button
               className={`mr-2 px-4 py-2 rounded ${
                 activeTab === "transactions"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary"
+                  ? "bg-primary text-primary-foreground dark:bg-blue-600 dark:text-white"
+                  : "bg-secondary dark:bg-gray-700 dark:text-gray-200"
               }`}
               onClick={() => setActiveTab("transactions")}
             >
@@ -60,8 +64,8 @@ export const Dashboard: React.FC = () => {
             <button
               className={`px-4 py-2 rounded ${
                 activeTab === "categories"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary"
+                  ? "bg-primary text-primary-foreground dark:bg-blue-600 dark:text-white"
+                  : "bg-secondary dark:bg-gray-700 dark:text-gray-200"
               }`}
               onClick={() => setActiveTab("categories")}
             >
