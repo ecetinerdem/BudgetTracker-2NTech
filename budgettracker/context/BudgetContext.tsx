@@ -103,7 +103,7 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const deleteTransaction = (id: string) => {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
-    // Check if the category still has transactions
+
     setCategories((prev) =>
       prev.map((cat) => ({
         ...cat,
