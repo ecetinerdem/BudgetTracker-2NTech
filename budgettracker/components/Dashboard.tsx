@@ -92,7 +92,7 @@ export const Dashboard: React.FC = () => {
             >
               Kategoriler
             </button>
-            <React.Suspense fallback={<div>Rapor Yükleniyor...</div>}>
+            {/**<React.Suspense fallback={<div>Rapor Yükleniyor...</div>}>
               <PDFDownloadLink
                 document={<BudgetPDFDocument data={pdfData} />}
                 fileName="butce-raporu.pdf"
@@ -104,7 +104,7 @@ export const Dashboard: React.FC = () => {
                   return <span>Rapor</span>;
                 }}
               </PDFDownloadLink>
-            </React.Suspense>
+            </React.Suspense> **/}
           </div>
           {activeTab === "transactions" ? (
             <>
