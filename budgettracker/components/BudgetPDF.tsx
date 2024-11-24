@@ -26,43 +26,64 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BudgetPDFDocument = ({ data }) => {
-  const { transactions, categories, totalIncome, totalExpenses } = data;
+interface BudgetPDFDocumentProps {
+  data: {
+    transactions: any[];
+    categories: any[];
+    totalIncome: number;
+    totalExpenses: number;
+  };
+}
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.section}>
-          <Text style={styles.title}>Bütçe Raporu</Text>
+export const BudgetPDFDocument: React.FC<BudgetPDFDocumentProps> = React.memo(
+  ({ data }) => {
+    const {
+      transactions = [],
+      categories = [],
+      totalIncome = 0,
+      totalExpenses = 0,
+    } = data || {};
 
-          <Text style={styles.subtitle}>Özet</Text>
-          <Text style={styles.text}>
-            Toplam Gelir: ₺{totalIncome.toFixed(2)}
-          </Text>
-          <Text style={styles.text}>
-            Toplam Gider: ₺{totalExpenses.toFixed(2)}
-          </Text>
-          <Text style={styles.text}>
-            Bakiye: ₺{(totalIncome - totalExpenses).toFixed(2)}
-          </Text>
+    return (
+      <Document>
+        <Page size="A4" style={styles.page}>
+          <View style={styles.section}>
+            <Text style={styles.title}>Bütçe Raporu</Text>
 
-          <Text style={styles.subtitle}>Son İşlemler</Text>
-          {transactions.slice(-5).map((transaction, index) => (
-            <Text key={index} style={styles.text}>
-              {transaction.date} - {transaction.description}: ₺
-              {transaction.amount.toFixed(2)} ({transaction.type})
+            <Text style={styles.subtitle}>Özet</Text>
+            <Text style={styles.text}>
+              Toplam Gelir: ₺{Number(totalIncome).toFixed(2)}
             </Text>
-          ))}
-
-          <Text style={styles.subtitle}>Kategoriler</Text>
-          {categories.map((category, index) => (
-            <Text key={index} style={styles.text}>
-              {category.name}: ₺{category.budgetLimit.toFixed(2)} (
-              {category.type})
+            <Text style={styles.text}>
+              Toplam Gider: ₺{Number(totalExpenses).toFixed(2)}
             </Text>
-          ))}
-        </View>
-      </Page>
-    </Document>
-  );
-};
+            <Text style={styles.text}>
+              Bakiye: ₺{Number(totalIncome - totalExpenses).toFixed(2)}
+            </Text>
+
+            <Text style={styles.subtitle}>Son İşlemler</Text>
+            {transactions.slice(-5).map((transaction, index) => (
+              <Text key={index} style={styles.text}>
+                {transaction?.date || "Tarih Yok"} -{" "}
+                {transaction?.description || "Açıklama Yok"}: ₺
+                {Number(transaction?.amount || 0).toFixed(2)} (
+                {transaction?.type || "Tür Yok"})
+              </Text>
+            ))}
+
+            <Text style={styles.subtitle}>Kategoriler</Text>
+            {categories.map((category, index) => (
+              <Text key={index} style={styles.text}>
+                {category?.name || "İsimsiz Kategori"}: ₺
+                {Number(category?.budgetLimit || 0).toFixed(2)} (
+                {category?.type || "Tür Yok"})
+              </Text>
+            ))}
+          </View>
+        </Page>
+      </Document>
+    );
+  }
+);
+
+BudgetPDFDocument.displayName = "BudgetPDFDocument";
